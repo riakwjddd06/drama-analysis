@@ -10,6 +10,8 @@
 2. **젊은 시청자 비중이 높은 작품은 시청률보다 화제성이 크다.** JTBC 샤이닝(+4계단)·모두가 자신의 무가치함과 싸우고 있다(+3)가 대표적이며, 2049 시청률 비율과 시청률 대비 화제성의 순위 일치도는 0.62였다.
 3. **최종화까지 관심이 쌓인 작품이 종영 후에도 오래 간다.** 김부장·모두가 자신의 무가치함과 싸우고 있다는 종영 후 넷플릭스 한국 TOP 10에 3주 남아 가장 오래 갔고, 구글 검색 반감기도 7일로 가장 길었다.
 
+**보너스:** 시계열 분해로 10편 모두 방송 요일(또는 다음 날)에 검색이 몰리는 주간 반복을 확인했고, 넷플릭스 오리지널 8편은 동시 방영작보다 초반 순위는 높지만 7주차부터 TOP 10에서 더 빨리 빠졌다(9주차 잔류 12% vs 50%).
+
 자세한 내용은 [REPORT.md](REPORT.md), 데이터 출처와 수집 방법은 [DATA.md](DATA.md)에 있습니다.
 
 ![그래프 01](images/01_triple_curve.png)
@@ -19,7 +21,7 @@
 Python 3.14에서 확인했습니다.
 
 ```bash
-git clone <저장소 주소>
+git clone https://github.com/riakwjddd06/drama-analysis.git
 cd drama-analysis
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
@@ -38,6 +40,8 @@ python src/ch3_halflife.py           # 3장 보조: 구글 반감기, 그래프 
 python src/ch3_netflix.py            # 3장 메인: 넷플릭스 종영 후 잔존, 그래프 06
 python src/graph01_triple.py         # 그래프 01
 python src/graph07_trend_weekday.py  # 그래프 07
+python src/bonus_decompose.py        # 보너스: 시계열 분해, 그래프 08
+python src/bonus_original.py         # 보너스: 오리지널 vs 동시 방영, 그래프 09
 ```
 
 그래프의 한글 글꼴은 macOS의 AppleGothic입니다. 다른 운영체제에서는 각 스크립트 위쪽의 `plt.rcParams["font.family"]`를 설치된 한글 글꼴(예: Malgun Gothic, NanumGothic)로 바꿔 주세요.
