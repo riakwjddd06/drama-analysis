@@ -1,1 +1,78 @@
-# drama-analysis
+# TV와 넷플릭스, 같은 드라마를 다르게 볼까?
+
+2026년 상반기 TV와 넷플릭스에 동시 방영된 드라마 10편을 **TV 시청률 · 넷플릭스 한국 순위 · 온라인 화제성(라코이)**으로 비교한 시계열 분석입니다.
+
+> 평가 편의를 위해 수집 완료된 데이터를 `data/raw/`에 동봉했습니다. API 키 설정 없이 아래 순서대로 실행하면 결과를 재현할 수 있습니다.
+
+## 핵심 결과
+
+1. **같은 드라마도 지표마다 정점이 다르다.** 10편 중 8편은 넷플릭스 순위 정점이 TV 시청률 정점보다 빨랐다(중앙값 3.5주). 은애하는 도적님아는 넷플릭스 2주차, 화제성 5주차, 시청률 8주차가 최고였다.
+2. **젊은 시청자 비중이 높은 작품은 시청률보다 화제성이 크다.** JTBC 샤이닝(+4계단)·모두가 자신의 무가치함과 싸우고 있다(+3)가 대표적이며, 2049 시청률 비율과 시청률 대비 화제성의 순위 일치도는 0.62였다.
+3. **최종화까지 관심이 쌓인 작품이 종영 후에도 오래 간다.** 김부장·모두가 자신의 무가치함과 싸우고 있다는 종영 후 넷플릭스 한국 TOP 10에 3주 남아 가장 오래 갔고, 구글 검색 반감기도 7일로 가장 길었다.
+
+자세한 내용은 [REPORT.md](REPORT.md), 데이터 출처와 수집 방법은 [DATA.md](DATA.md)에 있습니다.
+
+![그래프 01](images/01_triple_curve.png)
+
+## 실행 방법
+
+Python 3.14에서 확인했습니다.
+
+```bash
+git clone <저장소 주소>
+cd drama-analysis
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+아래 순서대로 실행하면 `data/processed/`와 `images/`의 결과가 다시 만들어집니다.
+
+```bash
+python src/load_google.py            # 구글 묶음 연결 → google_kr_daily.csv
+python src/load_racoi.py             # 라코이 엑셀 → racoi_weekly.csv
+python src/ch1_curves.py             # 1장: TV·넷플릭스 곡선 유형
+python src/graph02_curve_types.py    # 그래프 02
+python src/ch2_gap.py                # 2장: 시청률 vs 화제성 갭, 그래프 03
+python src/ch3_halflife.py           # 3장 보조: 구글 반감기, 그래프 05
+python src/ch3_netflix.py            # 3장 메인: 넷플릭스 종영 후 잔존, 그래프 06
+python src/graph01_triple.py         # 그래프 01
+python src/graph07_trend_weekday.py  # 그래프 07
+```
+
+그래프의 한글 글꼴은 macOS의 AppleGothic입니다. 다른 운영체제에서는 각 스크립트 위쪽의 `plt.rcParams["font.family"]`를 설치된 한글 글꼴(예: Malgun Gothic, NanumGothic)로 바꿔 주세요.
+
+### 데이터를 새로 받으려면
+
+- 넷플릭스: `python src/collect_netflix.py`
+- 라코이·구글 트렌드·네이버 데이터랩·펀덱스: 웹에서 내려받았으며, 조회 조건과 링크를 [DATA.md](DATA.md)에 적었습니다.
+
+## 폴더 구조
+
+```
+drama-analysis/
+├── README.md
+├── REPORT.md            분석 리포트
+├── DATA.md              수집 기록·데이터 사전
+├── requirements.txt
+├── data/
+│   ├── dramas.csv       분석 대상 10편
+│   ├── originals.csv    넷플릭스 오리지널 8편 (보너스 비교군)
+│   ├── raw/             수집한 원본 (시청률, 넷플릭스, 라코이, 구글, 네이버, 펀덱스)
+│   └── processed/       코드가 만든 중간 결과
+├── src/                 수집·분석·그래프 코드
+└── images/              그래프 PNG
+```
+
+## 데이터 출처 · 라이선스
+
+- 시청률: 닐슨코리아 발표치(네이버 드라마 정보 재인용)
+- 넷플릭스 TOP 10: [Netflix Tudum](https://www.netflix.com/tudum/top10)
+- 화제성: [RACOI](https://www.racoi.or.kr) (한국방송광고진흥공사), 굿데이터코퍼레이션 펀덱스 (보도 기사 인용)
+- 검색 관심도: Google Trends, 네이버 데이터랩
+
+모든 데이터는 각 서비스의 이용약관을 따르며 학습 목적으로만 사용했습니다.
+
+## AI 사용
+
+분석 기획, 코드 작성, 데이터 검증에 AI(Claude)를 사용했습니다. 작업별 사용 이유와 검증 방법은 [REPORT.md의 AI 사용 로그](REPORT.md#8-ai-사용-로그)에 정리했습니다.
