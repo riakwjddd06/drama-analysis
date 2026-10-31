@@ -56,6 +56,7 @@ python src/bonus_original.py         # 보너스: 오리지널 vs 동시 방영,
 ```
 drama-analysis/
 ├── README.md
+├── LICENSE            코드 라이선스 (MIT)
 ├── REPORT.md            분석 리포트
 ├── DATA.md              수집 기록·데이터 사전
 ├── requirements.txt
@@ -76,6 +77,8 @@ drama-analysis/
 - 검색 관심도: Google Trends, 네이버 데이터랩
 
 모든 데이터는 각 서비스의 이용약관을 따르며 학습 목적으로만 사용했습니다.
+
+코드(`src/`)는 [MIT License](LICENSE)를 따릅니다. 데이터에는 적용되지 않습니다.
 
 ## AI 사용
 
