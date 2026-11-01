@@ -100,7 +100,7 @@ for ax, (_, r) in zip(axes.flat, order.iterrows()):
         ev = (pd.Timestamp(EVENTS[r["title"]][0]) - d["last_air"]).days
         ax.axvspan(ev - 0.5, ev + 1.5, color="#eb6834", alpha=0.15, lw=0)
         ax.text(ev + 3, 115, EVENTS[r["title"]][1], fontsize=8, color=MUTED, va="center")
-    title = r["title"] + (" (저신뢰)" if r["저신뢰"] else "")
+    title = r["title"] + (" *" if r["저신뢰"] else "")
     ax.set_title(f"{title}\n{r['quadrant']}", fontsize=10, color=INK, loc="left")
     ax.set_xlim(-30, 60)
     ax.set_ylim(0, 125)
@@ -115,8 +115,9 @@ for ax in axes[:, 0]:
     ax.set_ylabel("검색 관심도\n(방영 중 최고점=100)", fontsize=9, color=INK)
 fig.suptitle("그래프 05. 종영 후 검색 관심도가 식는 속도 (구글 트렌드, 대한민국)", x=0.01, ha="left", fontsize=14, color=INK)
 fig.text(0.01, 0.935, "점선(가로): 최고점의 50%  ·  점선(세로): 종영일  ·  흰 원: 반감기(7일 이동평균이 최고점의 50% 아래로 3일 연속 내려간 첫날)  ·  최고점 구간: 1화 ~ 최종화 3일 뒤\n"
-         "검색 관심이 줄어드는 속도이며, 실제 시청자가 절반으로 줄어든 시점을 뜻하지 않는다. 일별 검색량의 요일 변동을 없애려고 7일 이동평균(가운데 정렬)을 썼다.",
+         "검색 관심이 줄어드는 속도이며, 실제 시청자가 절반으로 줄어든 시점을 뜻하지 않는다. 일별 검색량의 요일 변동을 없애려고 7일 이동평균(가운데 정렬)을 썼다.\n"
+         "* 구글 검색량이 적어 방영 중 0으로 표시된 날이 40%를 넘는 작품. 곡선 모양은 참고용으로 본다.",
          fontsize=9, color=MUTED, va="top")
-fig.subplots_adjust(top=0.80, bottom=0.08, left=0.07, right=0.99, hspace=0.55, wspace=0.12)
+fig.subplots_adjust(top=0.78, bottom=0.08, left=0.07, right=0.99, hspace=0.55, wspace=0.12)
 fig.savefig("images/05_decay_curves.png", dpi=150)
 print("저장: images/05_decay_curves.png")

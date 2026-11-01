@@ -39,7 +39,7 @@ for t in dramas.index:
     ad = set(ratings.loc[ratings["title"] == t, "air_date"])
     on, off = r[r.index.isin(ad)].mean(), r[~r.index.isin(ad)].mean()
     low = (r == 0).mean() > 0.4                                    # 방영 중 0인 날 40% 초과 = 저신뢰
-    rows.append((t + (" (저신뢰)" if low else ""), on / off if off > 0 else float("nan")))
+    rows.append((t + (" *" if low else ""), on / off if off > 0 else float("nan")))
 eff = pd.DataFrame(rows, columns=["title", "배수"]).sort_values("배수")
 
 print(f"[{REP}] 방영 기간 평균 {run.mean():.1f}, 이동평균에서 벗어난 정도(표준편차) {resid.std():.1f}")
@@ -83,7 +83,7 @@ ax3.tick_params(axis="y", labelsize=9, colors=INK)
 fig.suptitle("그래프 07. 검색 관심도의 트렌드·주간 반복·노이즈 (구글 트렌드, 대한민국)", x=0.02, ha="left", fontsize=14, color=INK)
 fig.text(0.02, 0.945,
          f"트렌드 = 7일 이동평균(가운데 정렬)  ·  주간 반복 = 방송 요일마다 오르는 패턴  ·  노이즈 = 이동평균에서 벗어난 정도(표준편차 {resid.std():.1f})\n"
-         "검색 관심도는 구글 트렌드 상대값(작품별 최고 날 = 100)이며, 실제 검색 횟수가 아니다.",
+         "검색 관심도는 구글 트렌드 상대값(작품별 최고 날 = 100)이며, 실제 검색 횟수가 아니다.  * 구글 검색량이 적어 방영 중 0인 날이 40%를 넘는 작품(참고용).",
          fontsize=9, color=MUTED, va="top")
 fig.subplots_adjust(top=0.86, bottom=0.07, left=0.08, right=0.97)
 fig.savefig("images/07_trend_weekday.png", dpi=150)

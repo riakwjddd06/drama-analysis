@@ -7,7 +7,7 @@ plt.rcParams["font.family"] = "AppleGothic"
 plt.rcParams["axes.unicode_minus"] = False
 os.makedirs("images", exist_ok=True)
 
-REP = "은애하는 도적님아"          # 대표작 (I1의 TV 뒷심형 사례)
+REP = "멋진 신세계"                # 대표작 (I1 사례: 넷플릭스 → 화제성 → TV 순으로 정점)
 
 dramas = pd.read_csv("data/dramas.csv", parse_dates=["first_air", "last_air"]).set_index("title")
 tv = pd.read_csv("data/processed/tv_weekly.csv")

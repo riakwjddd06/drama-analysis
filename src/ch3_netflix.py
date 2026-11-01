@@ -47,48 +47,35 @@ print(f"[교차 검증] 넷플릭스 잔존 vs 구글 반감기 순위 일치도
       f"(종영 전 반감 작품 제외, {len(both)}편)")
 res.to_csv("data/processed/ch3_netflix.csv", index=False)
 
-# ---------- 그래프 06: 넷플릭스 잔존(메인) | 구글 반감기(보조), 같은 작품 순서 ----------
-COLORS = {"동반 흥행형": "#2a78d6", "TV 뒷심형": "#eb6834", "넷플릭스 강세형": "#1baf7a", "동반 하락형": "#8a8a85"}
-INK, MUTED = "#2b2b2b", "#8a8a85"
-order = res.iloc[::-1]                                      # 위에서부터 오래 남은 순
-fig, (a1, a2) = plt.subplots(1, 2, figsize=(13, 6.5), sharey=True, gridspec_kw={"wspace": 0.08})
+# ---------- 그래프 06: 종영 후 넷플릭스 한국 TOP 10에 남은 주 수 ----------
+INK, MUTED, BAR = "#2b2b2b", "#8a8a85", "#2a78d6"
+order = res.iloc[::-1]                                      # 그림에서 위쪽 = 오래 남은 작품
+fig, ax = plt.subplots(figsize=(11, 6.2))
 y = range(len(order))
-a1.barh(y, order["종영 후 잔존(주)"], color=order["quadrant"].map(COLORS), height=0.6)
+ax.barh(y, order["종영 후 잔존(주)"], color=BAR, height=0.6)
 for i, (_, r) in zip(y, order.iterrows()):
-    a1.text(r["종영 후 잔존(주)"] + 0.05, i, f"{r['종영 후 잔존(주)']}주 (점수 {r['잔존 점수']})",
-            va="center", fontsize=9, color=INK)
-a1.set_yticks(list(y), order["title"], fontsize=10, color=INK)
-a1.set_xlim(0, res["종영 후 잔존(주)"].max() + 1.2)
-a1.set_xticks(range(0, int(res["종영 후 잔존(주)"].max()) + 2))
-a1.set_title("① 종영 후 넷플릭스 한국 TOP 10에 남은 주 수 (메인)", loc="left", fontsize=11, color=INK)
-a1.set_xlabel("주 (종영 다음 주부터 연속)", fontsize=9, color=MUTED)
-
-gv = order["반감기(일)"].where(~order["종영 전 반감"])
-a2.barh(y, gv.fillna(0), color=order["quadrant"].map(COLORS), height=0.6, alpha=0.55)
-for i, (_, r) in zip(y, order.iterrows()):
-    if r["종영 전 반감"]:
-        txt = "종영 전 이미 반감"
+    title, last = r["title"], int(last_week[r["title"]])
+    ranks = nf[nf["title"] == title].set_index("week_no")["weekly_rank"]
+    fin = ranks.get(last)
+    fin_txt = f"종영 주 {int(fin)}위" if pd.notna(fin) else "종영 주 TOP 10 밖"
+    after = [f"{int(ranks[last + k])}위" for k in range(1, r["종영 후 잔존(주)"] + 1)]
+    if after:
+        txt = f"{r['종영 후 잔존(주)']}주   ({fin_txt} → " + " → ".join(after) + ")"
     else:
-        txt = f"{int(r['반감기(일)'])}일"
-    if r["저신뢰"]:
-        txt += " (저신뢰)"
-    a2.text((0 if r["종영 전 반감"] else r["반감기(일)"]) + 0.15, i, txt, va="center", fontsize=9, color=INK)
-a2.set_xlim(0, res["반감기(일)"].max() + 4)
-a2.set_title("② 구글 검색 관심도 반감기 (보조)", loc="left", fontsize=11, color=INK)
-a2.set_xlabel("일 (종영 다음 날부터)", fontsize=9, color=MUTED)
-
-for ax in (a1, a2):
-    ax.tick_params(axis="x", labelsize=8, colors=MUTED)
-    ax.grid(axis="x", color="#e6e6e3", lw=0.6)
-    ax.set_axisbelow(True)
-    for sp in ("top", "right"):
-        ax.spines[sp].set_visible(False)
-handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in COLORS.values()]
-fig.legend(handles, COLORS.keys(), loc="lower center", ncol=4, frameon=False, fontsize=9, bbox_to_anchor=(0.5, 0.0))
-fig.suptitle("그래프 06. 종영 후 인기가 얼마나 오래 가나 (색 = 1장 곡선 유형)", x=0.02, ha="left", fontsize=14, color=INK)
-fig.text(0.02, 0.905, f"두 지표의 작품 순서 일치도(스피어만) {rho:.2f}, 종영 전 이미 반감한 작품 제외 {len(both)}편.  "
-         "넷플릭스는 주간 상대 순위라 새 작품이 들어오면 밀릴 수 있다.",
+        txt = f"0주   ({fin_txt} → 다음 주 바로 TOP 10 밖)"
+    ax.text(r["종영 후 잔존(주)"] + 0.06, i, txt, va="center", fontsize=9.5, color=INK)
+ax.set_yticks(list(y), order["title"], fontsize=10, color=INK)
+ax.set_xlim(0, res["종영 후 잔존(주)"].max() + 2.6)
+ax.set_xticks(range(0, int(res["종영 후 잔존(주)"].max()) + 1))
+ax.set_xlabel("종영 다음 주부터 넷플릭스 한국 TOP 10에 연속으로 남은 주 수", fontsize=9, color=MUTED)
+ax.tick_params(axis="x", labelsize=9, colors=MUTED)
+ax.grid(axis="x", color="#e6e6e3", lw=0.6)
+ax.set_axisbelow(True)
+for sp in ("top", "right"):
+    ax.spines[sp].set_visible(False)
+fig.suptitle("그래프 06. 종영 후 넷플릭스 한국 TOP 10에 몇 주 더 남았나", x=0.02, ha="left", fontsize=14, color=INK)
+fig.text(0.02, 0.905, "괄호 = 종영 주 순위 → 종영 후 주별 순위.  넷플릭스는 주간 상대 순위라 새 작품이 들어오면 밀릴 수 있다.",
          fontsize=9, color=MUTED, va="top")
-fig.subplots_adjust(top=0.80, bottom=0.17, left=0.22, right=0.98)
+fig.subplots_adjust(top=0.84, bottom=0.11, left=0.25, right=0.98)
 fig.savefig("images/06_after_finale.png", dpi=150)
 print("\n저장: images/06_after_finale.png")
